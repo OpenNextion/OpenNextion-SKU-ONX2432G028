@@ -8,7 +8,7 @@
 
 `ONX2432G028` 是一款基于 `ESP32-S3R8` 的 2.8 英寸 Open Nextion HMI 开发板，集成电容触摸显示、`2.4 GHz Wi-Fi`、`Bluetooth 5 LE`、`MicroSD`、摄像头、麦克风、喇叭、电池管理和多种扩展接口，适合用于人机交互界面、物联网终端、音视频交互和快速原型开发。
 
-本仓库汇总了该型号的产品图片、尺寸图、原理图、PCB、认证资料、数据手册、USB 转串口驱动以及 `ESP-IDF` 示例工程，方便开发者下载、评估和二次开发。
+本仓库汇总了该型号的产品图片、尺寸图、原理图、PCB、认证资料、数据手册、USB 转串口驱动，以及 `ESP-IDF` 和 `ESP-Arduino` 两套示例工程，方便开发者下载、评估和二次开发。
 
 ## 购买链接
 
@@ -58,15 +58,22 @@
 | `Certifications/` | 认证与合规相关资料 |
 | `Datasheets/` | 主要芯片与器件数据手册，如 `ESP32-S3`、`ST7789`、`CST826`、`PCF8574`、`IP4054V` |
 | `Drawings/` | 结构尺寸图、`2D` 图纸、`3D` 模型 |
-| `Example Programs/` | 示例工程，当前主要提供 `ESP-IDF` 例程 |
+| `Example Programs/` | 示例工程，包含 `ESP-IDF` 与 `ESP-Arduino` 例程 |
 | `LTA Announcement/` | 官方相关公告文件 |
 | `Product Images/` | 产品实物图片 |
-| `Schematic & Layout /` | 原理图与 PCB 布局资料 |
+| `Schematic & Layout_/` | 原理图与 PCB 布局资料 |
 | `USB-to-Serial Driver/` | USB 转串口驱动，含 Windows、macOS、Linux |
 
 ## 示例工程
 
-`Example Programs/ESP-IDF/` 中已包含多个可直接参考的例程，仓库内大部分示例均附带中英文说明文档。
+`Example Programs/` 中包含两套可直接参考的例程：
+
+- `ESP-IDF/`：原生 ESP-IDF 工程，适合量产固件、组件化开发以及需要完整 ESP-IDF 能力的项目。
+- `ESP-Arduino/`：Arduino 草图工程，适合快速原型、Arduino IDE 用户，以及偏好 ESP32 Arduino Core 开发方式的项目。
+
+仓库内大部分示例均附带中英文说明文档。
+
+### ESP-IDF 例程
 
 | 示例目录 | 说明 |
 | :--- | :--- |
@@ -79,6 +86,22 @@
 | `07_microphone_test` | PDM 麦克风采集、语音前端处理与回放 |
 | `08_battery_test` | 电池电压、电量估算和充电状态显示 |
 | `09_outofbox_demo` | 出厂演示程序，快速验证 LCD、触摸和 LVGL UI |
+
+### ESP-Arduino 例程
+
+`Example Programs/ESP-Arduino/` 中提供了开发板示例的 Arduino 版本，每个目录都可以通过其中的 `.ino` 文件直接在 Arduino IDE 中打开。
+
+| 示例目录 | 说明 |
+| :--- | :--- |
+| `01_touch_test` | LCD、CST826 触摸、PCF8574 复位控制和 LVGL 触摸坐标显示测试 |
+| `02_music_test` | 从 `MicroSD` 的 `/music` 目录播放 `.mp3` 文件，并显示 LVGL 音乐界面、通过喇叭输出 |
+| `03_sd_card_image_test` | 从 `MicroSD` 扫描并显示 `JPG`、`JPEG`、`PNG` 图片 |
+| `04_sd_card_test` | 使用 `SD_MMC` 进行 `MicroSD` 挂载、写入、读取和校验测试 |
+| `05_wifi_test` | 使用 ESP32 Arduino `WiFi` 库进行 Wi-Fi 扫描和连接界面测试 |
+| `06_camera_test` | `OV2640` 摄像头采集与 LCD 实时预览 |
+| `07_microphone_test` | PDM 麦克风录音与 I2S 喇叭回放 |
+| `08_battery_test` | 电池电压采样、电量估算与充电状态显示 |
+| `09_outofbox_demo` | 出厂 LVGL widgets 演示程序的 Arduino 移植版本 |
 
 ## 快速上手
 
@@ -98,18 +121,30 @@
 - 固件烧录
 - 串口日志输出
 
-### 3. 选择示例工程
+### 3. 选择开发环境
 
-进入 `Example Programs/ESP-IDF/`，选择需要的示例目录。根据示例自带的 `README_zh.md` 或 `README_en.md` 准备对应外设，例如 `MicroSD` 卡、摄像头、麦克风或喇叭。
+- 如果你习惯乐鑫原生框架、组件化工程和 `idf.py`，请选择 `Example Programs/ESP-IDF/`。
+- 如果你习惯 Arduino IDE 或 `arduino-cli`，请选择 `Example Programs/ESP-Arduino/`。
+
+选择具体示例目录后，根据示例自带的 `README_zh.md` 或 `README_en.md` 准备对应外设，例如 `MicroSD` 卡、摄像头、麦克风或喇叭。
 
 ### 4. 配置开发环境
 
-仓库中的 `ESP-IDF` 示例工程说明显示：
+对于 `ESP-IDF`，仓库中的示例工程说明显示：
 
 - 开发版本：`ESP-IDF 5.4.1`
 - 推荐版本：`ESP-IDF >= 5.4.0`
 
-### 5. 编译与烧录
+对于 `ESP-Arduino`，请安装 ESP32 Arduino core，并选择：
+
+- Board: `ESP32S3 Dev Module`
+- Flash Size: `16MB (128Mb)`
+- PSRAM: `OPI PSRAM`
+- Partition Scheme: `16M Flash (3MB APP/9.9MB FATFS)`
+
+编译前请根据所选示例 README 安装对应 Arduino 库。
+
+### 5. 编译与烧录 ESP-IDF 示例
 
 以出厂演示示例为例：
 
@@ -122,6 +157,17 @@ idf.py -p <PORT> flash monitor
 
 如果首次下载失败，可按住 `BOOT` 键，再按一次 `RESET` 键进入下载模式后重新烧录。
 
+### 6. 编译与上传 ESP-Arduino 示例
+
+以 Arduino 出厂演示示例为例：
+
+```bash
+arduino-cli compile --fqbn esp32:esp32:esp32s3:FlashSize=16M,PartitionScheme=app3M_fat9M_16MB,PSRAM=opi "Example Programs/ESP-Arduino/09_outofbox_demo"
+arduino-cli upload -p <PORT> --fqbn esp32:esp32:esp32s3:FlashSize=16M,PartitionScheme=app3M_fat9M_16MB,PSRAM=opi "Example Programs/ESP-Arduino/09_outofbox_demo"
+```
+
+也可以直接在 Arduino IDE 中打开对应 `.ino` 文件，并使用上面的开发板配置。
+
 ## 使用注意事项
 
 - `USB_UART` 与 `UART0` 的 `TX/RX` 为复用关系，不能同时使用。
@@ -132,11 +178,11 @@ idf.py -p <PORT> flash monitor
 - 如需使用外置天线，需要按官方硬件说明拆除对应电阻后切换天线路径。
 - 开发板本体不防水，如有需要请搭配定制外壳使用。
 - 详细尺寸请查看 `Drawings/ONX2432G028_Dimension.pdf`。
-- 详细硬件电路请查看 `Schematic & Layout /V1.3/` 中的原理图和 PCB 文件。
+- 详细硬件电路请查看 `Schematic & Layout_/V1.3/` 中的原理图和 PCB 文件。
 
 ## 参考资料
 
 - 官方产品页面：[ONX2432G028 Wiki](https://nextion.tech/wiki/onx2432g028/)
 - ESP-IDF 入门文档：[ESP32-S3 Getting Started](https://docs.espressif.com/projects/esp-idf/en/stable/esp32s3/get-started/)
 
-如果你正在为该型号开发应用，建议先从 `09_outofbox_demo` 或 `01_touch_test` 开始，确认屏幕、触摸和基础环境正常后，再继续接入 `Wi-Fi`、`MicroSD`、摄像头或音频相关功能。
+如果你正在为该型号开发应用，建议先从 `ESP-IDF` 或 `ESP-Arduino` 中的 `09_outofbox_demo` 或 `01_touch_test` 开始，确认屏幕、触摸和基础环境正常后，再继续接入 `Wi-Fi`、`MicroSD`、摄像头或音频相关功能。

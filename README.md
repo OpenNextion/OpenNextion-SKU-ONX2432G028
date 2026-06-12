@@ -8,7 +8,7 @@
 
 `ONX2432G028` is a 2.8-inch Open Nextion HMI development board based on `ESP32-S3R8`. It integrates a capacitive touch display, `2.4 GHz Wi-Fi`, `Bluetooth 5 LE`, `MicroSD`, camera, microphone, speaker, battery management, and multiple expansion interfaces, making it suitable for HMI panels, IoT terminals, multimedia interaction, and rapid prototyping.
 
-This repository collects product images, mechanical drawings, schematics, PCB files, certification documents, datasheets, USB-to-serial drivers, and `ESP-IDF` example projects for this model, so users can download and start development more easily.
+This repository collects product images, mechanical drawings, schematics, PCB files, certification documents, datasheets, USB-to-serial drivers, and example projects for both `ESP-IDF` and `ESP-Arduino`, so users can download and start development more easily.
 
 ## Purchase Links
 
@@ -58,15 +58,22 @@ The following specifications are compiled from the official Wiki and the files i
 | `Certifications/` | Certification and compliance documents |
 | `Datasheets/` | Datasheets for key components such as `ESP32-S3`, `ST7789`, `CST826`, `PCF8574`, and `IP4054V` |
 | `Drawings/` | Mechanical dimension file, `2D` drawing, and `3D` model |
-| `Example Programs/` | Example projects, currently mainly `ESP-IDF` examples |
+| `Example Programs/` | Example projects for `ESP-IDF` and `ESP-Arduino` |
 | `LTA Announcement/` | Official announcement document |
 | `Product Images/` | Product photos |
-| `Schematic & Layout /` | Schematics and PCB layout files |
+| `Schematic & Layout_/` | Schematics and PCB layout files |
 | `USB-to-Serial Driver/` | USB-to-serial drivers for Windows, macOS, and Linux |
 
 ## Example Projects
 
-`Example Programs/ESP-IDF/` contains multiple ready-to-use examples. Most example folders include both Chinese and English documentation.
+`Example Programs/` contains two sets of ready-to-use examples:
+
+- `ESP-IDF/`: native ESP-IDF projects, suitable for production firmware, component-based development, and projects that need the full ESP-IDF feature set.
+- `ESP-Arduino/`: Arduino sketch projects, suitable for rapid prototyping, Arduino IDE users, and projects that prefer the ESP32 Arduino Core development workflow.
+
+Most example folders include both Chinese and English documentation.
+
+### ESP-IDF Examples
 
 | Example Folder | Description |
 | :--- | :--- |
@@ -79,6 +86,22 @@ The following specifications are compiled from the official Wiki and the files i
 | `07_microphone_test` | PDM microphone capture, speech front-end processing, and playback |
 | `08_battery_test` | Battery voltage, battery level estimation, and charge status display |
 | `09_outofbox_demo` | Factory demo for quickly verifying LCD, touch, and LVGL UI |
+
+### ESP-Arduino Examples
+
+`Example Programs/ESP-Arduino/` provides Arduino versions of the board examples. Each directory can be opened directly in Arduino IDE through its `.ino` file.
+
+| Example Folder | Description |
+| :--- | :--- |
+| `01_touch_test` | LCD, CST826 touch, PCF8574 reset control, and LVGL touch-coordinate display test |
+| `02_music_test` | Play `.mp3` files from the `/music` directory on `MicroSD`, show the LVGL music UI, and output through the speaker |
+| `03_sd_card_image_test` | Scan and display `JPG`, `JPEG`, and `PNG` images from `MicroSD` |
+| `04_sd_card_test` | Use `SD_MMC` to mount, write, read, and verify `MicroSD` content |
+| `05_wifi_test` | Use the ESP32 Arduino `WiFi` library for Wi-Fi scanning and connection UI testing |
+| `06_camera_test` | `OV2640` camera capture and live LCD preview |
+| `07_microphone_test` | PDM microphone recording and I2S speaker playback |
+| `08_battery_test` | Battery-voltage sampling, battery-level estimation, and charge-state display |
+| `09_outofbox_demo` | Arduino port of the factory LVGL widgets demo |
 
 ## Quick Start
 
@@ -98,18 +121,30 @@ Use a `USB-C` cable to connect the board to your computer. The `USB-C` port can 
 - Firmware flashing
 - Serial log output
 
-### 3. Choose an Example
+### 3. Choose a Development Environment
 
-Go to `Example Programs/ESP-IDF/` and select the example you need. Check the included `README_zh.md` or `README_en.md` in each example folder and prepare the required peripherals, such as a `MicroSD` card, camera, microphone, or speaker.
+- Use `Example Programs/ESP-IDF/` if you prefer Espressif's native framework, component-based projects, and `idf.py`.
+- Use `Example Programs/ESP-Arduino/` if you prefer Arduino IDE or `arduino-cli` sketches.
+
+After choosing an example folder, check the included `README_zh.md` or `README_en.md` and prepare the required peripherals, such as a `MicroSD` card, camera, microphone, or speaker.
 
 ### 4. Set Up the Development Environment
 
-The included `ESP-IDF` examples indicate:
+For `ESP-IDF`, the included examples indicate:
 
 - Development version: `ESP-IDF 5.4.1`
 - Recommended version: `ESP-IDF >= 5.4.0`
 
-### 5. Build and Flash
+For `ESP-Arduino`, install the ESP32 Arduino core and select:
+
+- Board: `ESP32S3 Dev Module`
+- Flash Size: `16MB (128Mb)`
+- PSRAM: `OPI PSRAM`
+- Partition Scheme: `16M Flash (3MB APP/9.9MB FATFS)`
+
+Install the libraries listed in the selected example's README before compiling.
+
+### 5. Build and Flash an ESP-IDF Example
 
 Example using the out-of-box demo:
 
@@ -122,6 +157,17 @@ idf.py -p <PORT> flash monitor
 
 If flashing fails on the first attempt, hold the `BOOT` button and press `RESET` once to enter download mode, then try again.
 
+### 6. Build and Upload an ESP-Arduino Example
+
+Example using the Arduino out-of-box demo:
+
+```bash
+arduino-cli compile --fqbn esp32:esp32:esp32s3:FlashSize=16M,PartitionScheme=app3M_fat9M_16MB,PSRAM=opi "Example Programs/ESP-Arduino/09_outofbox_demo"
+arduino-cli upload -p <PORT> --fqbn esp32:esp32:esp32s3:FlashSize=16M,PartitionScheme=app3M_fat9M_16MB,PSRAM=opi "Example Programs/ESP-Arduino/09_outofbox_demo"
+```
+
+You can also open the corresponding `.ino` file directly in Arduino IDE and use the board settings above.
+
 ## Notes
 
 - `USB_UART` and `UART0` share the same `TX/RX` signals and cannot be used at the same time.
@@ -132,11 +178,11 @@ If flashing fails on the first attempt, hold the `BOOT` button and press `RESET`
 - If you need an external antenna, follow the official hardware instruction to switch the RF path by desoldering the corresponding resistor.
 - The board itself is not waterproof. If needed, use a custom enclosure.
 - For mechanical dimensions, see `Drawings/ONX2432G028_Dimension.pdf`.
-- For detailed circuit design, see the files under `Schematic & Layout /V1.3/`.
+- For detailed circuit design, see the files under `Schematic & Layout_/V1.3/`.
 
 ## References
 
 - Official product page: [ONX2432G028 Wiki](https://nextion.tech/wiki/onx2432g028/)
 - ESP-IDF getting started: [ESP32-S3 Getting Started](https://docs.espressif.com/projects/esp-idf/en/stable/esp32s3/get-started/)
 
-If you are starting development on this board, it is recommended to begin with `09_outofbox_demo` or `01_touch_test` to verify the screen, touch, and basic environment first, then move on to `Wi-Fi`, `MicroSD`, camera, or audio-related features.
+If you are starting development on this board, it is recommended to begin with `09_outofbox_demo` or `01_touch_test` in either `ESP-IDF` or `ESP-Arduino` to verify the screen, touch, and basic environment first, then move on to `Wi-Fi`, `MicroSD`, camera, or audio-related features.
